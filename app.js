@@ -1,7 +1,6 @@
 /*-----Variables-----*/
-let ele = 0,
-  y = 0,
-  z = 1;
+const key = "984f6ed8f9e27c7714d16b05206acbce";
+let forecastDay = 0, previousDay = 0;
 let latitudeVal, longitudeVal, currdt;
 let locationForm = document.getElementById("location-form");
 let locationVal = document.getElementById("location-input");
@@ -31,29 +30,42 @@ function showPosition(position) {
 
   latitude.innerText = "Lat - " + Math.abs(latitudeVal) + dir_lat + " / ";
   longitude.innerText = "Lon - " + Math.abs(longitudeVal) + dir_lon;
-  getWeatherReport(latitudeVal, longitudeVal);
+  getWeather(latitudeVal, longitudeVal);
 }
 /*-----Get current location coordinates-----*/
 
 /*-----Get search location coordinates-----*/
 async function geocode(e) {
   e.preventDefault();
-  api = "db306b7af7a04077bca3c5fd8efb0594";
-  request =
-    "https://api.opencagedata.com/geocode/v1/json?q=" +
-    locationVal.value +
-    "&key=" +
-    api;
+
+
+  /*openweathermap geocode*/
+  // request = "http://api.openweathermap.org/geo/1.0/direct?q=" + locationVal.value + "&appid=" + key;
+
+
+
+  /* Free Open Geocode */
+  request = "https://geocode.maps.co/search?q=" + locationVal.value;
+
   await fetch(request)
     .then((response) => response.json())
     .then((coords) => {
-      // console.log(coords);
-      let coordLocation = coords.results[0].formatted;
+
+      /*openweathermap geocode*/
+      // let coordLocation = coords[0].name;
+
+      /* Free Open Geocode */
+      let coordLocation = coords[0].display_name;
+
+
       locationVal.value = coordLocation;
       let latitude = document.getElementById("latitude");
       let longitude = document.getElementById("longitude");
-      latitudeVal = coords.results[0].geometry.lat.toFixed(2);
-      longitudeVal = coords.results[0].geometry.lng.toFixed(2);
+      latitudeVal = parseFloat(coords[0].lat).toFixed(2);
+      longitudeVal = parseFloat(coords[0].lon).toFixed(2);
+      
+      forecastDay = 0; 
+      previousDay = 0;
 
       let dir_lat = " N",
         dir_lon = " E";
@@ -62,61 +74,105 @@ async function geocode(e) {
 
       latitude.innerText = "Lat - " + Math.abs(latitudeVal) + dir_lat + " / ";
       longitude.innerText = "Lon - " + Math.abs(longitudeVal) + dir_lon;
-      getWeatherReport(latitudeVal, longitudeVal);
+      getWeather(latitudeVal, longitudeVal);
     })
-    .catch(function (error) {
-      console.log(error);
-    });
+    .catch(error => console.log(error));
 }
 /*-----Get search location coordinates-----*/
 
 /*-----forecast for next day-----*/
 function forwardBtn() {
-  // console.log("front");
-  if (ele < 32 && ele > 0) {
-    ele = z * 8;
-    z = z + 1;
+  if(previousDay){
+    previousDay -= 1;
     getWeatherReport(latitudeVal, longitudeVal);
+  } else if(forecastDay<7){
+    forecastDay += 1;
+    getWeatherForecast(latitudeVal, longitudeVal);
   }
-  if (ele == 10) {
-    y = y - 1;
-    getWeatherReport1(latitudeVal, longitudeVal);
-  }
+
+  if(forecastDay>=8)
+    document.getElementById('forwardButton').disabled;
 }
 /*-----forecast for next day-----*/
 
 /*-----forecast for previous day-----*/
 function backwardBtn() {
-  // console.log("back");
-  if (z > 0) {
-    z = z - 1;
-    ele = z * 8;
+  if(forecastDay){
+    forecastDay -= 1;
+    getWeatherForecast(latitudeVal, longitudeVal);
+  } else if(previousDay<5) {
+    previousDay += 1;
     getWeatherReport(latitudeVal, longitudeVal);
-  } else {
-    y = y + 1;
-    getWeatherReport1(latitudeVal, longitudeVal);
   }
+
+  if(previousDay>5)
+    document.getElementById('backwardButton').disabled;
 }
 /*-----forecast for previous day-----*/
 
 /*-----get weather data-----*/
-function getWeatherReport1(lat, lng) {
-  if (y == 4) {
-    document.getElementById("myBtn1").disabled = true;
-  }
-  key = "984f6ed8f9e27c7714d16b05206acbce";
-  baseUrl = "https://api.openweathermap.org/data/2.5/onecall/timemachine?";
-  let dtdata = currdt - y * 86400;
-  request1 =
-    baseUrl + "lat=" + lat + "&lon=" + lng + "&dt=" + dtdata + "&appid=" + key;
-  fetch(request1)
+
+// Get Future Data
+function getWeatherForecast(lat, lng) {
+  requestUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lng}&exclude=current,minutely,hourly&appid=${key}`;
+  fetch(requestUrl)
+    .then((response) => response.json())
+    .then(showWeatherForecast)
+    .catch(error => console.log(error));
+}
+
+// Set Forecast fetched data to HTML
+function showWeatherForecast(weather) {
+
+  let temperaturePlaceholder = document.getElementById("temp");
+  const temp_day = weather.daily[forecastDay].temp.day - 273.15;
+  temperaturePlaceholder.innerHTML = `${Math.round(temp_day)}&deg;C`;
+
+  let minTempPlaceholder = document.getElementById("min");
+  const temp_min = weather.daily[forecastDay].temp.min - 273.15;
+  minTempPlaceholder.innerHTML = `${Math.floor(temp_min)}&deg;C`;
+
+  let maxTempPlaceholder = document.getElementById("max");
+  const temp_max = weather.daily[forecastDay].temp.max - 273.15;
+  maxTempPlaceholder.innerHTML = `${Math.ceil(temp_max)}&deg;C`;
+
+  let weatherType = document.getElementById("weather");
+  weatherType.innerText = `${weather.daily[forecastDay].weather[0].main.toUpperCase()}`;
+
+  setBackgroundImage(weather.daily[forecastDay].weather[0].main);
+
+  let date = document.getElementById("date");
+  let dx = weather.daily[forecastDay].dt;
+  date.innerText = timeConverter(dx);
+
+  let day = document.getElementById("day");
+  day.innerText = daydisplay(dx);
+
+  let wind = document.getElementById("wind");
+  wind.innerHTML = `${(weather.daily[forecastDay].wind_speed * 3.6).toFixed(2)} km/hr`;
+
+  let preci = document.getElementById("preci");
+  preci.innerText = `${weather.daily[forecastDay].humidity} %`;
+
+  let icon = weather.daily[forecastDay].weather[0].icon;
+  document.getElementById("icon").src = "icons/" + icon + ".png";
+  currdt = weather.daily[0].dt;
+}
+
+// Get Past Data
+function getWeatherReport(lat, lng) {
+  let dtdata = currdt - previousDay * 86400;
+  requestUrl = `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lng}&dt=${dtdata}&appid=${key}`;
+  fetch(requestUrl)
     .then((weather) => {
       return weather.json();
     })
-    .then(showWeatherReport1);
+    .then(showWeatherReport)
+    .catch(error => console.log(error));
 }
-function showWeatherReport1(weather) {
-  // console.log(weather);
+
+// Set Past fetched data to HTML
+function showWeatherReport(weather) {
   let temperature = document.getElementById("temp");
   temperature.innerHTML = `${Math.round(weather.current.temp - 273.15)}&deg;C`;
 
@@ -143,59 +199,56 @@ function showWeatherReport1(weather) {
   document.querySelector(".cont2").style.display = "none";
 }
 
-function getWeatherReport(lat, lng) {
-  key = "984f6ed8f9e27c7714d16b05206acbce";
-  baseUrl = "https://api.openweathermap.org/data/2.5/forecast?";
+// Get Current Data
+function getWeather(lat, lng) {
+  baseUrl = "https://api.openweathermap.org/data/2.5/weather?";
   let request = baseUrl + "lat=" + lat + "&lon=" + lng + "&appid=" + key;
   fetch(request)
     .then((weather) => weather.json())
-    .then(showWeatherReport);
+    .then(showWeather)
+    .catch(error => console.log(error));
 }
 
-function showWeatherReport(weather) {
-  // console.log(weather);
+// Set Currently fetched data to HTML
+function showWeather(weather) {
   let place = document.getElementById("place");
-  place.innerText = `${weather.city.name},${weather.city.country}`;
+  place.innerText = `${weather.name},${weather.sys.country}`;
   let temperature = document.getElementById("temp");
   temperature.innerHTML = `${Math.round(
-    weather.list[ele].main.temp - 273.15
+    weather.main.temp - 273.15
   )}&deg;C`;
 
   let minTemp = document.getElementById("min");
   minTemp.innerHTML = `${Math.floor(
-    weather.list[ele].main.temp_min - 273.15
+    weather.main.temp_min - 273.15
   )}&deg;C`;
   let maxTemp = document.getElementById("max");
   maxTemp.innerHTML = `${Math.ceil(
-    weather.list[ele].main.temp_max - 273.15
+    weather.main.temp_max - 273.15
   )}&deg;C`;
 
   let weatherType = document.getElementById("weather");
-  weatherType.innerText = `${weather.list[ele].weather[0].main.toUpperCase()}`;
+  weatherType.innerText = `${weather.weather[0].main.toUpperCase()}`;
 
-  setBackgroundImage(weather.list[ele].weather[0].main);
+  setBackgroundImage(weather.weather[0].main);
 
   let date = document.getElementById("date");
-  let dx = weather.list[ele].dt;
+  let dx = weather.dt;
   date.innerText = timeConverter(dx);
 
   let day = document.getElementById("day");
   day.innerText = daydisplay(dx);
 
   let wind = document.getElementById("wind");
-  wind.innerHTML = `${(weather.list[0].wind.speed * 3.6).toFixed(2)} km/hr`;
+  wind.innerHTML = `${(weather.wind.speed * 3.6).toFixed(2)} km/hr`;
 
   let preci = document.getElementById("preci");
-  preci.innerText = `${weather.list[ele].main.humidity} %`;
+  preci.innerText = `${weather.main.humidity} %`;
 
-  let icon = weather.list[ele].weather[0].icon;
+  let icon = weather.weather[0].icon;
   document.getElementById("icon").src = "icons/" + icon + ".png";
-  currdt = weather.list[0].dt;
+  currdt = weather.dt;
   document.querySelector(".cont2").style.display = "block";
-  if (ele == 31) {
-    document.getElementById("myBtn").disabled = true;
-  }
-  ele = 10;
 }
 /*-----get weather data-----*/
 
@@ -249,3 +302,32 @@ function setBackgroundImage(weatherName) {
   }
 }
 /*-----set Background Image-----*/
+
+/*-----Add Swiping-----*/
+const swipeArea = document.getElementById('weather-body');
+
+let touchStartX = 0;
+let touchEndX = 0;
+
+swipeArea.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+});
+
+swipeArea.addEventListener('touchmove', (e) => {
+    touchEndX = e.touches[0].clientX;
+});
+
+swipeArea.addEventListener('touchend', () => {
+    const deltaX = touchEndX - touchStartX;
+    const swipeThreshold = 50;
+
+    if (deltaX > swipeThreshold) {
+        // Right Swipe
+        backwardBtn()
+      } else if (deltaX < -swipeThreshold) {
+        // Left Swipe
+        forwardBtn()
+    }
+});
+
+/*-----Add Swiping-----*/

@@ -296,7 +296,7 @@ const weatherImage = {
 function setBackgroundImage(weatherName) {
   if (weatherImage[weatherName.toLowerCase()] == 1) {
     document.body.style.backgroundImage =
-      "url(/images/" + weatherName + ".jpg)";
+      "url(/images/" + weatherName.toLowerCase() + ".jpg)";
   } else {
     document.body.style.backgroundImage = "url(/images/bg.jpg)";
   }

@@ -4,28 +4,29 @@
     box-sizing:border-box;
 }
 body{
+    margin: 0;
     background-image: url('../images/bg.jpg');
-    overflow: hidden;
+    width: 100%;
     background-position: center; 
     background-repeat: no-repeat; 
     background-size: auto auto;
     font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Searchbar */
 .searchInputBox{
     text-align: center;
     background-color: rgba(240, 248, 255, 0.6);
-    width: 180vh;
-    height: 15vh;
-    margin-left: auto;
-    margin-right: auto;
+    width: 80vw;
+    margin: auto;
+    padding: auto;
     border-radius: 5px;
 }
 .searchInputBox>*{
     margin-top: 50px;
 }
 .input-box {
-    width: 150vh;
+    width: 80%;
     background-color: rgba(255, 255, 255, 0.6);
     border:none;
     outline:none;
@@ -35,11 +36,12 @@ body{
     border-radius: 5px;
     text-align: center;
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 .input-box:focus{
     background-color:rgba(255, 255, 255);
 }
-.searchInputBox .button1{
+.searchInputBox .button{
     height:45px;
     width:100px;
     border-radius: 5px;
@@ -47,47 +49,26 @@ body{
     background-color:rgba(255, 255, 255, 0.6) ;
     border-width: 0em;
 }
-.searchInputBox .button1:hover{
-    background-color:rgba(255, 255, 255,0.6);
+.searchInputBox .button:hover{
+    background-color:rgba(219, 219, 219, 0.6);
 }
-.container1{
+
+/*Weather Result Boady*/
+.container-box{
     background-color:rgba(240, 248, 255, 0.6) ;
-    width: 120vh;
-    margin:50px auto;
+    width: 80%;
+    margin:50px 20px;
     padding: 20px;
     border-radius: 5px;
+    max-width: 900px;
 }
 .weather-body{
     color: #582233;
     background-color:rgba(255, 255, 255, 0.6);
-    padding-left: 20px;
-    padding-top: 20px;
+    padding: 20px;
     border-radius: 5px;
-    height: 45vh;
-}
-.a{
+    height: 100%;
     overflow: auto;
-}
-.place{
-    font-weight: bold;
-    font-size: 3rem;
-    float: left;
-    margin-top: -10px;
-}
-/* .all{
-    display: none;
-} */
-.cont2{
-    /* display: none; */
-    text-align: right;
-    float: right;
-    padding-right: 50px;
-    padding-top: 13px;
-}
-.cont2 li{
-    display: inline-block;
-    font-size: 2rem;
-    font-weight: 500;
 }
 .weather-body li{
     display: inline-block;
@@ -97,6 +78,30 @@ body{
     font-size: 1.2rem;
     font-weight: 500;
 }
+.place{
+    font-weight: bold;
+    font-size: 3rem;
+    padding-bottom: 10px;
+}
+.temp{
+    font-size: 5rem;
+    font-weight: bolder;
+    text-shadow: 2px 4px rgba(0,0,0,0.3);
+}
+.temp-set li{
+    display: inline-block;
+    font-size: 2rem;
+    font-weight: 500;
+}
+.tile-2 {
+    text-align: center;
+}
+.tile-2 img{
+    width: 100%;
+}
+.tile-3 {
+    text-align: end;
+}
 .day{
     margin-top:-15px;
     font-size: 1.5rem;
@@ -104,82 +109,66 @@ body{
 .date{
     font-size: 1.2rem;
 }
+.wind{
+    margin-top: 35px;
+}
 .preci{
     margin-top: 8px;
 }
-.b{
-    overflow: wrap;
-}
-.date{
-    float:left;
-}
-.temp{
-    float: right;
-    font-size: 5rem;
-    font-weight: bolder;
-    margin-right:100px ;
-    margin-top:-50px;
-    text-shadow: 2px 4px rgba(0,0,0,0.3);
-}
-.c{
-    overflow: wrap;
-}
-.e{
-    overflow: wrap;
-}
-.preci{
-    float: left;
-    margin-top: 80px;
-    position: fixed;
-}
 .weather{
-    float: right;
-    margin-top: 100px;
     font-size: 2rem;
     font-weight: 700;
-    position: fixed;
-    margin-left: 180px;
 }
-.wind{
+@media (max-width: 768px) {
+    .tile-1, .tile-2, .tile-3{
+        text-align: center;
+    }
+    .tile-2 img{
+        width: 40%;
+    }
+}
+@media (max-width: 576px) {
+    .place{
+        font-size: 10vw;
+    }
+}
+@media (max-width: 280px) {
+    .temp{
+        font-size: 16vw;
+    }
+    .temp-set li{
+        font-size: 6vw;
+    }
+}
+
+/* Forward and Backward Buttons*/
+.bkbt{
     float: left;
-    margin-top: 35px;
-    position: fixed;
 }
-.d{
+.fwdbt{
     float: right;
-    margin-left: 150px;
-    margin-top: -80px;
-    position: fixed;
 }
-.d img{
-    height: 200px;
-    width: 200px;
-}
-.mybt1{
-    float: left;
-    margin-top: -250px;
-    margin-left: 200px;
-}
-.mybt{
-    float: right;
-    margin-top: -250px;
-    margin-right: 200px;
-}
-.myBtn{
-    background-color: rgba(0, 0, 0, 0);
+.forwardButton, .backwardButton{
     border: none;
+    overflow-x: visible;
 }
-.myBtn1{
-    background-color: rgba(0, 0, 0, 0);
-    border: none;
+.forwardButton:disabled, .backwardButton:disabled{
+    color: gray !important;
+    opacity: 0.5;
+    background-color: #582233;
 }
-.mybt1 .fa-angle-double-left{
+.bkbt .fa-angle-double-left{
     font-size: 5rem;
     color: white;
     text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
 }
-.mybt .fa-angle-double-right{
+.fwdbt .fa-angle-double-right{
     font-size: 5rem;
     color: white;
     text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
+}
+@media (max-width: 768px){
+    .bkbt .fa-angle-double-left , .fwdbt .fa-angle-double-right {
+        font-size: 2rem;
+    }
 }

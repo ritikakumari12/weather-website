@@ -218,6 +218,8 @@ function showWeather(weather) {
     weather.main.temp - 273.15
   )}&deg;C`;
 
+  let tempSet = document.getElementById("temp-set");
+  tempSet.style.display = "block";
   let minTemp = document.getElementById("min");
   minTemp.innerHTML = `${Math.floor(
     weather.main.temp_min - 273.15
@@ -242,6 +244,8 @@ function showWeather(weather) {
   let wind = document.getElementById("wind");
   wind.innerHTML = `${(weather.wind.speed * 3.6).toFixed(2)} km/hr`;
 
+  let preciDiv = document.querySelector(".info-div .preci");
+  preciDiv.style.display = "block";
   let preci = document.getElementById("preci");
   preci.innerText = `${weather.main.humidity} %`;
 
@@ -296,9 +300,9 @@ const weatherImage = {
 function setBackgroundImage(weatherName) {
   if (weatherImage[weatherName.toLowerCase()] == 1) {
     document.body.style.backgroundImage =
-      "url(/images/" + weatherName + ".jpg)";
+      "url(images/" + weatherName.toLowerCase() + ".jpg)";
   } else {
-    document.body.style.backgroundImage = "url(/images/bg.jpg)";
+    document.body.style.backgroundImage = "url(images/bg.jpg)";
   }
 }
 /*-----set Background Image-----*/

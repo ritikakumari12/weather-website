@@ -59,12 +59,14 @@
               </div>
               <div class="temp-div">
                 <div class="temp" id="temp"></div>
-                <div class="temp-set">
+                <div class="temp-set" id="temp-set" style="display: none;">
                   <ul>
-                    <li><i class="fa fa-long-arrow-up" aria-hidden="true"></i></li>
-                    <li><div class="min" id="min"></div></li>
                     <li>
                       <i class="fa fa-long-arrow-down" aria-hidden="true"></i>
+                    </li>
+                    <li><div class="min" id="min"></div></li>
+                    <li>
+                      <i class="fa fa-long-arrow-up" aria-hidden="true"></i>
                     </li>
                     <li><div class="max" id="max"></div></li>
                   </ul>
@@ -75,9 +77,9 @@
             <div class="col-md-3 tile-2">
               <div class="weather-type-div">
                 <div>
-                  <img id="icon" src="/icons/01d.png" />
+                  <img id="icon" src="" />
                 </div>
-                <div class="weather" id="weather">Clear</div>
+                <div class="weather" id="weather"></div>
               </div>
             </div>
             <div class="col-md-3 tile-3">
@@ -88,7 +90,7 @@
               
               <div class="info-div">
                 <div class="wind" id="wind"></div>
-                <div class="preci">
+                <div class="preci" style="display: none;">
                   <ul>
                     <li><i class="fa fa-tint"></i></li>
                     <li><div id="preci">Preci</div></li>
